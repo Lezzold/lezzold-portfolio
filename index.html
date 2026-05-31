@@ -183,13 +183,6 @@
       font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 6px;
       letter-spacing: 1px;
     }
-    .gallery-item-stats {
-      display: flex; gap: 12px;
-    }
-    .gallery-item-stat {
-      font-size: 10px; letter-spacing: 1px; color: var(--red-bright);
-      display: flex; align-items: center; gap: 4px;
-    }
 
     .gallery-item-corner {
       position: absolute; top: 10px; right: 10px;
@@ -483,83 +476,16 @@
       }
     ];
 
-    // Load cached stats from localStorage
-    function getCachedStats() {
-      try {
-        const raw = localStorage.getItem('as_stats');
-        return raw ? JSON.parse(raw) : {};
-      } catch { return {}; }
-    }
-
-    function setCachedStats(stats) {
-      try { localStorage.setItem('as_stats', JSON.stringify(stats)); } catch {}
-    }
-
-    // Try to fetch real likes/views from ArtStation via our proxy
-    async function fetchStats() {
-      try {
-        const res = await fetch('/api/artstation?type=projects', {
-          signal: AbortSignal.timeout(8000)
-        });
-        if (!res.ok) throw new Error('proxy failed');
-        const data = await res.json();
-        if (data.error) throw new Error(data.error);
-
-        const projects = data.data || [];
-        const stats = {};
-        projects.forEach(p => {
-          // permalink is like /artwork/L4A9OA
-          const id = p.permalink?.split('/').pop();
-          if (id) {
-            stats[id] = {
-              likes: p.likes_count || 0,
-              views: p.views_count || 0
-            };
-          }
-        });
-
-        setCachedStats(stats);
-
-        // Update stat-projects
-        document.getElementById('stat-projects').textContent = data.total_count || projects.length;
-
-        // Re-render overlays with real numbers
-        updateOverlays(stats);
-
-      } catch (e) {
-        console.warn('Stats fetch failed:', e.message);
-        // Use cached
-        updateOverlays(getCachedStats());
-      }
-    }
-
-    function updateOverlays(stats) {
-      WORKS.forEach(w => {
-        const el = document.getElementById('stats-' + w.id);
-        if (!el) return;
-        const s = stats[w.id];
-        if (s) {
-          el.innerHTML = `
-            <span class="gallery-item-stat">♥ ${s.likes}</span>
-            <span class="gallery-item-stat">&#128065; ${s.views}</span>
-          `;
-        }
-      });
-    }
-
     // Render gallery
     function renderGallery() {
       const container = document.getElementById('gallery-container');
       const moreBtn   = document.getElementById('gallery-more');
-
-      const cached = getCachedStats();
 
       const grid = document.createElement('div');
       grid.className = 'gallery';
       grid.id = 'gallery-track';
 
       WORKS.forEach((w, i) => {
-        const s = cached[w.id] || { likes: '—', views: '—' };
         const a = document.createElement('a');
         a.className = 'gallery-item';
         a.href = w.url;
@@ -570,10 +496,7 @@
           <img src="${w.cover}" alt="${w.title}" loading="lazy" />
           <div class="gallery-item-overlay">
             <div class="gallery-item-title">${w.title}</div>
-            <div class="gallery-item-stats" id="stats-${w.id}">
-              <span class="gallery-item-stat">♥ ${s.likes}</span>
-              <span class="gallery-item-stat">&#128065; ${s.views}</span>
-            </div>
+
           </div>
           <div class="gallery-item-corner"></div>
         `;
@@ -607,8 +530,6 @@
       btnNext.addEventListener('click', () => { offset += itemW; updateCarousel(); });
       updateCarousel();
 
-      // Try to get real stats from proxy
-      fetchStats();
     }
 
     renderGallery();

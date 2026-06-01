@@ -4,18 +4,11 @@
   ],
   "headers": [
     {
-      "source": "/(.*).mp4",
+      "source": "/guitarInTheDark.mp4",
       "headers": [
         { "key": "Content-Type", "value": "video/mp4" },
         { "key": "Accept-Ranges", "value": "bytes" },
-        { "key": "Cache-Control", "value": "public, max-age=31536000" }
-      ]
-    },
-    {
-      "source": "/(.*).svg",
-      "headers": [
-        { "key": "Content-Type", "value": "image/svg+xml" },
-        { "key": "Cache-Control", "value": "public, max-age=31536000" }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
   ]

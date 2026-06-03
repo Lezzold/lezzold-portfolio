@@ -4,9 +4,9 @@
   ],
   "headers": [
     {
-      "source": "/guitarInTheDark.mp4",
+      "source": "/guitarInTheDark.webm",
       "headers": [
-        { "key": "Content-Type", "value": "video/mp4" },
+        { "key": "Content-Type", "value": "video/webm" },
         { "key": "Accept-Ranges", "value": "bytes" },
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]

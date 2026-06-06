@@ -35,7 +35,7 @@
       content: '';
       position: fixed; inset: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 9999; opacity: 0.4;
+      pointer-events: none; z-index: 500; opacity: 0.4;
     }
 
     ::-webkit-scrollbar { width: 4px; }
@@ -306,7 +306,7 @@
   
     /* ── CHAT WIDGET ── */
     .chat-btn {
-      position: fixed; bottom: 32px; right: 32px; z-index: 1000;
+      position: fixed; bottom: 32px; right: 32px; z-index: 10000;
       width: 56px; height: 56px; border-radius: 0;
       background: var(--red); border: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
@@ -326,7 +326,7 @@
     }
 
     .chat-window {
-      position: fixed; bottom: 100px; right: 32px; z-index: 999;
+      position: fixed; bottom: 100px; right: 32px; z-index: 9999;
       width: 340px; max-height: 520px;
       background: var(--bg2); border: 1px solid var(--line);
       display: flex; flex-direction: column;
@@ -809,18 +809,20 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, contact, message }),
         });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
         if (data.ok) {
           form.classList.remove('visible');
-          addMsg('✅ Message sent! I'll reply soon via ' + (contact || 'the contact you provided') + '.');
+          addMsg('✅ Message sent! I\'ll reply soon via ' + (contact || 'the contact you provided') + '.');
           setTimeout(() => showChips(QUICK), 600);
           document.getElementById('chatName').value = '';
           document.getElementById('chatContact').value = '';
           document.getElementById('chatText').value = '';
         } else {
-          throw new Error(data.error);
+          throw new Error(data.error || 'Unknown error');
         }
       } catch(e) {
+        console.error('Chat send error:', e);
         addMsg('❌ Something went wrong. Try reaching me directly: <a href="https://t.me/lezzold">@lezzold</a>');
       }
 

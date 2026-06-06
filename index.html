@@ -303,6 +303,126 @@
     @keyframes loading { 0% { width:0%;margin-left:0 } 50% { width:80%;margin-left:10% } 100% { width:0%;margin-left:100% } }
     .error-state { text-align: center; padding: 60px 0; color: var(--muted); font-size: 12px; }
     .error-state a { color: var(--red-bright); }
+  
+    /* ── CHAT WIDGET ── */
+    .chat-btn {
+      position: fixed; bottom: 32px; right: 32px; z-index: 1000;
+      width: 56px; height: 56px; border-radius: 0;
+      background: var(--red); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 24px rgba(192,57,43,0.4);
+      transition: all 0.25s;
+    }
+    .chat-btn:hover { background: var(--red-bright); transform: translateY(-2px); }
+    .chat-btn svg { width: 24px; height: 24px; fill: #fff; }
+    .chat-btn .chat-badge {
+      position: absolute; top: -4px; right: -4px;
+      width: 12px; height: 12px; background: #fff; border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity:1; }
+      50% { transform: scale(1.3); opacity:0.7; }
+    }
+
+    .chat-window {
+      position: fixed; bottom: 100px; right: 32px; z-index: 999;
+      width: 340px; max-height: 520px;
+      background: var(--bg2); border: 1px solid var(--line);
+      display: flex; flex-direction: column;
+      transform: translateY(20px) scale(0.95);
+      opacity: 0; pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.25,0.46,0.45,0.94);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    }
+    .chat-window.open {
+      transform: translateY(0) scale(1);
+      opacity: 1; pointer-events: all;
+    }
+    .chat-header {
+      padding: 16px 20px; background: var(--bg3);
+      border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .chat-avatar {
+      width: 36px; height: 36px; background: var(--red-dim);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 14px;
+      color: var(--red-bright); flex-shrink: 0;
+    }
+    .chat-header-info { flex: 1; }
+    .chat-header-name { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+    .chat-header-status { font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+    .chat-header-status::before {
+      content: '●'; color: #2ecc71; margin-right: 4px; font-size: 8px;
+    }
+    .chat-close {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 18px; line-height: 1; padding: 4px;
+      transition: color 0.2s;
+    }
+    .chat-close:hover { color: var(--text); }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      scrollbar-width: thin; scrollbar-color: var(--red-dim) transparent;
+    }
+    .chat-msg {
+      max-width: 85%; padding: 10px 14px;
+      font-size: 12px; line-height: 1.6; letter-spacing: 0.3px;
+      animation: fadeIn 0.3s ease;
+    }
+    .chat-msg.bot {
+      background: var(--bg3); color: var(--text);
+      border-left: 2px solid var(--red-dim); align-self: flex-start;
+    }
+    .chat-msg.user {
+      background: var(--red-dim); color: #fff;
+      align-self: flex-end; border-left: none;
+      border-right: 2px solid var(--red-bright);
+    }
+    .chat-msg a { color: var(--red-bright); text-decoration: none; }
+    .chat-msg a:hover { text-decoration: underline; }
+    .chat-chips {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      padding: 0 16px 12px; 
+    }
+    .chip {
+      padding: 6px 12px; font-size: 10px; letter-spacing: 1.5px;
+      text-transform: uppercase; cursor: pointer;
+      background: transparent; border: 1px solid var(--red-dim);
+      color: var(--red-bright); transition: all 0.2s;
+    }
+    .chip:hover { background: var(--red-dim); color: #fff; }
+
+    .chat-form {
+      padding: 12px 16px; border-top: 1px solid var(--line);
+      display: none; flex-direction: column; gap: 8px;
+    }
+    .chat-form.visible { display: flex; }
+    .chat-input {
+      background: var(--bg3); border: 1px solid var(--line);
+      color: var(--text); padding: 10px 12px;
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      outline: none; transition: border-color 0.2s; resize: none;
+    }
+    .chat-input:focus { border-color: var(--red-dim); }
+    .chat-input::placeholder { color: var(--muted); }
+    .chat-send {
+      background: var(--red); color: #fff; border: none;
+      padding: 10px; font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .chat-send:hover { background: var(--red-bright); }
+    .chat-send:disabled { opacity: 0.5; cursor: default; }
+
+    @media (max-width: 480px) {
+      .chat-window { width: calc(100vw - 32px); right: 16px; bottom: 90px; }
+      .chat-btn { bottom: 20px; right: 16px; }
+    }
+
   </style>
 </head>
 <body>
@@ -543,5 +663,155 @@
 
     renderGallery();
   </script>
+
+  <!-- CHAT WIDGET -->
+  <button class="chat-btn" id="chatBtn" aria-label="Open chat">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+    <span class="chat-badge"></span>
+  </button>
+
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <div class="chat-avatar">LZ</div>
+      <div class="chat-header-info">
+        <div class="chat-header-name">LEZZOLD</div>
+        <div class="chat-header-status">Online</div>
+      </div>
+      <button class="chat-close" id="chatClose">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-chips" id="chatChips"></div>
+    <div class="chat-form" id="chatForm">
+      <input class="chat-input" id="chatName" placeholder="Your name" />
+      <input class="chat-input" id="chatContact" placeholder="Email or Telegram" />
+      <textarea class="chat-input" id="chatText" rows="3" placeholder="Your message..."></textarea>
+      <button class="chat-send" id="chatSend">Send message →</button>
+    </div>
+  </div>
+
+  <script>
+    // ── Chat Widget ──
+    const QUICK = [
+      {
+        label: '🔗 Social links',
+        answer: `Here are my profiles:<br>
+          <a href="https://www.artstation.com/lezzold" target="_blank">ArtStation</a> ·
+          <a href="https://t.me/lezzold" target="_blank">Telegram</a> ·
+          <a href="https://www.instagram.com/lezzold" target="_blank">Instagram</a> ·
+          <a href="https://www.linkedin.com/in/lezzold" target="_blank">LinkedIn</a>`
+      },
+      {
+        label: '🛠️ What software?',
+        answer: 'I work with <b>Blender</b>, <b>Substance 3D Painter</b>, <b>Photoshop</b>, <b>Premiere Pro</b> and <b>Unreal Engine</b>.'
+      },
+      {
+        label: '💼 Open for work?',
+        answer: 'Yes! I'm available for freelance and full-time projects. Write me directly — <a href="https://t.me/lezzold" target="_blank">@lezzold</a>'
+      },
+      {
+        label: '⏱️ Turnaround time?',
+        answer: 'Depends on project scope. Simple props — 2–5 days. Complex scenes or characters — 1–3 weeks. Let's discuss your task!'
+      },
+      {
+        label: '✉️ Send a message',
+        answer: null // opens form
+      },
+    ];
+
+    const btn    = document.getElementById('chatBtn');
+    const win    = document.getElementById('chatWindow');
+    const close  = document.getElementById('chatClose');
+    const msgs   = document.getElementById('chatMessages');
+    const chips  = document.getElementById('chatChips');
+    const form   = document.getElementById('chatForm');
+    const send   = document.getElementById('chatSend');
+
+    let opened = false;
+
+    function addMsg(text, type = 'bot') {
+      const d = document.createElement('div');
+      d.className = `chat-msg ${type}`;
+      d.innerHTML = text;
+      msgs.appendChild(d);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function showChips(list) {
+      chips.innerHTML = '';
+      list.forEach(q => {
+        const b = document.createElement('button');
+        b.className = 'chip';
+        b.textContent = q.label;
+        b.onclick = () => {
+          chips.innerHTML = '';
+          addMsg(q.label, 'user');
+          setTimeout(() => {
+            if (q.answer) {
+              addMsg(q.answer);
+              setTimeout(() => showChips(QUICK), 400);
+            } else {
+              addMsg('Sure! Fill in the form below and I'll get back to you ASAP 👇');
+              form.classList.add('visible');
+            }
+          }, 300);
+        };
+        chips.appendChild(b);
+      });
+    }
+
+    function initChat() {
+      msgs.innerHTML = '';
+      form.classList.remove('visible');
+      addMsg('Hey! 👋 I'm <b>LEZZOLD</b> — 3D Modeler & Character Designer.<br>How can I help you?');
+      setTimeout(() => showChips(QUICK), 500);
+    }
+
+    btn.addEventListener('click', () => {
+      opened = !opened;
+      win.classList.toggle('open', opened);
+      document.querySelector('.chat-badge').style.display = opened ? 'none' : '';
+      if (opened && msgs.children.length === 0) initChat();
+    });
+
+    close.addEventListener('click', () => {
+      opened = false;
+      win.classList.remove('open');
+    });
+
+    send.addEventListener('click', async () => {
+      const name    = document.getElementById('chatName').value.trim();
+      const contact = document.getElementById('chatContact').value.trim();
+      const message = document.getElementById('chatText').value.trim();
+      if (!message) return;
+
+      send.disabled = true;
+      send.textContent = 'Sending...';
+
+      try {
+        const res = await fetch('/api/telegram', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, contact, message }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          form.classList.remove('visible');
+          addMsg('✅ Message sent! I'll reply soon via ' + (contact || 'the contact you provided') + '.');
+          setTimeout(() => showChips(QUICK), 600);
+          document.getElementById('chatName').value = '';
+          document.getElementById('chatContact').value = '';
+          document.getElementById('chatText').value = '';
+        } else {
+          throw new Error(data.error);
+        }
+      } catch(e) {
+        addMsg('❌ Something went wrong. Try reaching me directly: <a href="https://t.me/lezzold">@lezzold</a>');
+      }
+
+      send.disabled = false;
+      send.textContent = 'Send message →';
+    });
+  </script>
+
 </body>
 </html>

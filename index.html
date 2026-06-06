@@ -718,9 +718,9 @@
       },
     ];
 
-    const btn    = document.getElementById('chatBtn');
-    const win    = document.getElementById('chatWindow');
-    const close  = document.getElementById('chatClose');
+    const chatBtn    = document.getElementById('chatBtn');
+    const chatWin    = document.getElementById('chatWindow');
+    const chatCloseBtn = document.getElementById('chatClose');
     const msgs   = document.getElementById('chatMessages');
     const chips  = document.getElementById('chatChips');
     const form   = document.getElementById('chatForm');
@@ -766,29 +766,32 @@
       setTimeout(() => showChips(QUICK), 500);
     }
 
-    btn.addEventListener('click', () => {
+    chatBtn.addEventListener('click', () => {
       opened = !opened;
-      win.classList.toggle('open', opened);
+      chatWin.classList.toggle('open', opened);
       document.querySelector('.chat-badge').style.display = opened ? 'none' : '';
       if (opened && msgs.children.length === 0) initChat();
     });
 
-    // Also clicking anywhere on chat-window should not close it
-    win.addEventListener('click', (e) => e.stopPropagation());
+    // Clicking inside chat-window should not bubble up
+    chatWin.addEventListener('click', (e) => e.stopPropagation());
 
     // Auto-open after 3s once per session
-    setTimeout(() => {
-      if (!opened) {
-        opened = true;
-        win.classList.add('open');
-        document.querySelector('.chat-badge').style.display = 'none';
-        if (msgs.children.length === 0) initChat();
-      }
-    }, 3000);
+    if (!sessionStorage.getItem('chatAutoOpened')) {
+      setTimeout(() => {
+        if (!opened) {
+          opened = true;
+          chatWin.classList.add('open');
+          document.querySelector('.chat-badge').style.display = 'none';
+          if (msgs.children.length === 0) initChat();
+          sessionStorage.setItem('chatAutoOpened', '1');
+        }
+      }, 3000);
+    }
 
-    close.addEventListener('click', () => {
+    chatCloseBtn.addEventListener('click', () => {
       opened = false;
-      win.classList.remove('open');
+      chatWin.classList.remove('open');
     });
 
     send.addEventListener('click', async () => {

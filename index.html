@@ -773,18 +773,18 @@
       if (opened && msgs.children.length === 0) initChat();
     });
 
-    // Auto-open after 3s (only once per session)
-    if (!sessionStorage.getItem('chatOpened')) {
-      setTimeout(() => {
-        if (!opened) {
-          opened = true;
-          win.classList.add('open');
-          document.querySelector('.chat-badge').style.display = 'none';
-          initChat();
-          sessionStorage.setItem('chatOpened', '1');
-        }
-      }, 3000);
-    }
+    // Also clicking anywhere on chat-window should not close it
+    win.addEventListener('click', (e) => e.stopPropagation());
+
+    // Auto-open after 3s once per session
+    setTimeout(() => {
+      if (!opened) {
+        opened = true;
+        win.classList.add('open');
+        document.querySelector('.chat-badge').style.display = 'none';
+        if (msgs.children.length === 0) initChat();
+      }
+    }, 3000);
 
     close.addEventListener('click', () => {
       opened = false;
